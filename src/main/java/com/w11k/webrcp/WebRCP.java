@@ -317,7 +317,7 @@ public class WebRCP {
 
 			urlClassLoader = new URLClassLoader(new URL[] { new URL(path) });
 			Class<?> launcher = urlClassLoader.loadClass(launcherClassName);
-			final Method launcherMain = launcher.getMethod("main", String.class);
+			final Method launcherMain = launcher.getMethod("main", new Class[]{String.class});
 			
 			/*
 			 * Start launcher with aurguments -os <operating-system> -ws
@@ -329,13 +329,13 @@ public class WebRCP {
 			 */
 			final String exeCommand = "-os " + os + " -ws "
 					+ getWindowSystem(os) + " -arch " + arch + " -install "
-					+ url + " -data " + url + "/workspace/ -user " + url
+					+ url +"/eclipse/" + " -data " + url + "/workspace/ -user " + url
 					+ "/workspace/ -nl " + Locale.getDefault() + arg;
 
 			printInfoBox("Launcher Command", exeCommand == null ? "null"
 					: exeCommand);
 
-			launcherMain.invoke(null,  exeCommand );
+			launcherMain.invoke(null,  new Object[]{exeCommand });
 			
 			//java -cp startup.jar org.eclipse.core.launcher.Main -os linux -ws gtk -arch amd64 -install /tmp/WebRCP Tutorial/unpacked -data /tmp/WebRCP Tutorial/unpacked/workspace/ -user /tmp/WebRCP Tutorial/unpacked/workspace/ -nl de_DE -product org.eclipse.ui.tutorials.rcp.part3.RcpApplication
 
