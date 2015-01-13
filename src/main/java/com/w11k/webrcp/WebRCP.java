@@ -61,6 +61,7 @@ public class WebRCP {
 	private static final String ARCH_PPC = "ppc";
 	private static final String ARCH_SPARC = "sparc";
 	private static final String ARCH_AMD64 = "amd64";
+	private static final String ARCH_X86_64 = "x86_64";
 	private static final String ARCH_IA64 = "ia64";
 
 	/*
@@ -114,6 +115,8 @@ public class WebRCP {
 	private static String determineArch() {
 		String arch = System.getProperty("os.arch").toLowerCase();
 
+		printInfoBox("Arch",arch);
+		
 		if (arch.indexOf("x86") >= 0 || arch.matches("i.86"))
 			return ARCH_X86;
 
@@ -317,7 +320,7 @@ public class WebRCP {
 
 			urlClassLoader = new URLClassLoader(new URL[] { new URL(path) });
 			Class<?> launcher = urlClassLoader.loadClass(launcherClassName);
-			final Method launcherMain = launcher.getMethod("main", new Class[]{String.class});
+			final Method launcherMain = launcher.getMethod("main", String.class);
 			
 			/*
 			 * Start launcher with aurguments -os <operating-system> -ws
@@ -335,7 +338,7 @@ public class WebRCP {
 			printInfoBox("Launcher Command", exeCommand == null ? "null"
 					: exeCommand);
 
-			launcherMain.invoke(null,  new Object[]{exeCommand });
+			launcherMain.invoke(null,  exeCommand );
 			
 			//java -cp startup.jar org.eclipse.core.launcher.Main -os linux -ws gtk -arch amd64 -install /tmp/WebRCP Tutorial/unpacked -data /tmp/WebRCP Tutorial/unpacked/workspace/ -user /tmp/WebRCP Tutorial/unpacked/workspace/ -nl de_DE -product org.eclipse.ui.tutorials.rcp.part3.RcpApplication
 
@@ -521,6 +524,11 @@ public class WebRCP {
 		String baseURL = getBaseURL();
 		String arch = determineArch();
 		String os = determineOS();
+		
+		//Sonderfall Ubuntu
+		if(arch.equals(ARCH_AMD64) && os.equals(OS_LINUX)){
+			arch=ARCH_X86_64;
+		}
 
 		File tempDir = new File(getSystemProperty("java.io.tmpdir"), appName);
 		tempDir.mkdirs();
